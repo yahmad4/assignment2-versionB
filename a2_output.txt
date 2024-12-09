@@ -1,0 +1,1 @@
+Warning: Permission denied for some directories. Skipping them.
