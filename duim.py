@@ -60,8 +60,6 @@ def percent_to_graph(percent: int, total_chars: int) -> str:
 
 
 def call_du_sub(location: str) -> list:
-    "use subprocess to call `du -d 1 + location`, rtrn raw list"
-
     """
     Use subprocess to call `du -d 1 <location>` and return the raw list.
 
@@ -80,15 +78,13 @@ def call_du_sub(location: str) -> list:
         )
         stdout, stderr = process.communicate()
 
-        if process.returncode != 0:
-            error_lines = stderr.strip().split('\n')
-            permission_errors = [line for line in error_lines if 'Permission denied' in line]
-        if permission_errors:
-            print("Warning: Permission denied for some directories. Skipping them.")
-
-
-        # Clean the output
-        return stdout.strip().split('\n')
+        # Filter out permission denied errors and clean output
+        error_lines = stderr.strip().split('\n')
+        filtered_stdout = [
+            line for line in stdout.strip().split('\n')
+            if not any(err in line for err in error_lines if 'Permission denied' in err)
+        ]
+        return filtered_stdout
     except Exception as e:
         print(f"Error: {e}")
         return []
